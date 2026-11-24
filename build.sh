@@ -1,6 +1,6 @@
 #!/bin/bash
 # Builds a universal (Apple silicon + Intel) release binary and wraps it in build/SpaceLens.app.
-# Pass --zip to also write the download archive the landing page links to.
+# Pass --dmg to also write the disk image the landing page links to.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -17,9 +17,17 @@ fi
 codesign --force --sign - "$APP" >/dev/null 2>&1
 echo "Built $APP"
 
-if [ "${1:-}" = "--zip" ]; then
-    mkdir -p docs/download
-    rm -f docs/download/SpaceLens.zip
-    ditto -c -k --keepParent "$APP" docs/download/SpaceLens.zip
-    echo "Wrote docs/download/SpaceLens.zip"
+if [ "${1:-}" = "--dmg" ]; then
+    # A disk image holding the app next to a shortcut to /Applications,
+    # so installing is one drag.
+    STAGE="build/dmg"
+    rm -rf "$STAGE"
+    mkdir -p "$STAGE" docs/download
+    cp -R "$APP" "$STAGE/SpaceLens.app"
+    ln -s /Applications "$STAGE/Applications"
+    rm -f docs/download/SpaceLens.dmg
+    hdiutil create -volname "SpaceLens" -srcfolder "$STAGE" -ov -format UDZO \
+        docs/download/SpaceLens.dmg >/dev/null
+    rm -rf "$STAGE"
+    echo "Wrote docs/download/SpaceLens.dmg"
 fi

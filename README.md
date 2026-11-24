@@ -10,7 +10,7 @@ A fast, native disk space analyzer and cache cleaner for macOS.
 
 ## Install
 
-1. Download `SpaceLens.zip` from the landing page, unzip it and move SpaceLens to Applications.
+1. Download `SpaceLens.dmg` from the landing page, open it and drag SpaceLens to Applications.
 2. The app is not notarised, so macOS blocks the first launch. Open System Settings › Privacy & Security and click **Open Anyway**.
 3. Grant Full Disk Access when the app asks. Without it, protected folders are skipped and totals come out low.
 
@@ -24,7 +24,7 @@ Requires Xcode 15 or later.
 ./build.sh                # builds build/SpaceLens.app
 open build/SpaceLens.app
 swift test                # scanner unit tests
-./build.sh --zip          # also refreshes docs/download/SpaceLens.zip
+./build.sh --dmg          # also refreshes docs/download/SpaceLens.dmg
 ```
 
 ## How it works

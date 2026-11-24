@@ -57,6 +57,20 @@ final class AppState {
     init() {
         refreshTargets()
         checkFullDiskAccess()
+        openFolderFromArguments()
+    }
+
+    /// `SpaceLens --open /some/folder` starts with that folder selected.
+    private func openFolderFromArguments() {
+        let args = CommandLine.arguments
+        guard let i = args.firstIndex(of: "--open"), i + 1 < args.count else { return }
+        let path = URL(fileURLWithPath: args[i + 1]).standardizedFileURL.path
+        var isDir: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDir), isDir.boolValue else { return }
+        if !targets.contains(where: { $0.path == path }) {
+            targets.append(ScanTarget(path: path, name: (path as NSString).lastPathComponent, kind: .folder))
+        }
+        selection = .target(path)
     }
 
     var selectedTarget: ScanTarget? {
